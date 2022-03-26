@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text.RegularExpressions;
 using maisim_file_structure.Enum;
 using maisim_file_structure.Objects;
 
@@ -41,8 +42,10 @@ public class BeatmapDecoder
             while (lines[0] != "")
             {
                 // get the property and value
-                string property = lines[0].Split(':')[0];
-                string value = lines[0].Split(':')[1];
+                // string property = lines[0].Split(':')[0];
+                // use regex to split ": "
+                string property = Regex.Split(lines[0], ": ")[0];
+                string value = Regex.Split(lines[0], ": ")[1];
                 // import the property and value to beatmap using propertyinfo
                 PropertyInfo propertyInfo = beatmap.GetType().GetProperty(property);
                 if (property == "DifficultyLevel")
@@ -66,8 +69,8 @@ public class BeatmapDecoder
             while (lines[0] != "")
             {
                 // get the property and value
-                string property = lines[0].Split(':')[0];
-                string value = lines[0].Split(':')[1];
+                string property = Regex.Split(lines[0], ": ")[0];
+                string value = Regex.Split(lines[0], ": ")[1];
                 // import the property and value to trackMetadata using propertyinfo
                 PropertyInfo propertyInfo = trackMetadata.GetType().GetProperty(property);
                 propertyInfo.SetValue(trackMetadata, Convert.ChangeType(value, propertyInfo.PropertyType));

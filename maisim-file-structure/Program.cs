@@ -36,14 +36,14 @@ using (StreamWriter file = File.CreateText(@"test.msm"))
         // Write every property except beatmapmetadata
         if (property.Name != "TrackMetadata")
         {
-            file.WriteLine(property.Name + ":" + property.GetValue(mockBeatmap));
+            file.WriteLine(property.Name + ": " + property.GetValue(mockBeatmap));
         }
     }
     // Write all of the beatmap metadata in beatmap object
     file.WriteLine("");
     foreach (PropertyInfo property in mockBeatmap.TrackMetadata.GetType().GetProperties())
     {
-        file.WriteLine(property.Name + ":" + property.GetValue(mockBeatmap.TrackMetadata));
+        file.WriteLine(property.Name + ": " + property.GetValue(mockBeatmap.TrackMetadata));
     }
 }
 #endregion
