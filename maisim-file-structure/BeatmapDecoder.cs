@@ -56,6 +56,24 @@ public class BeatmapDecoder
                 // remove the first element
                 lines = lines.Skip(1).ToArray();
             }
+            
+            // skip the next line (empty)
+            lines = lines.Skip(1).ToArray();
+            
+            // import track metadata from the lines to trackMetadata
+            // format is property : value
+            trackMetadata = new TrackMetadata();
+            while (lines[0] != "")
+            {
+                // get the property and value
+                string property = lines[0].Split(':')[0];
+                string value = lines[0].Split(':')[1];
+                // import the property and value to trackMetadata using propertyinfo
+                PropertyInfo propertyInfo = trackMetadata.GetType().GetProperty(property);
+                propertyInfo.SetValue(trackMetadata, Convert.ChangeType(value, propertyInfo.PropertyType));
+                // remove the first element
+                lines = lines.Skip(1).ToArray();
+            }
         }
     }
 }
