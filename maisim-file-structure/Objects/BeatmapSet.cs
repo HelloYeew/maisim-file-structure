@@ -9,4 +9,8 @@ public class BeatmapSet
     public int BeatmapSetID { get; set; }
 
     public List<Beatmap> Beatmaps { get; set; }
+    
+    public string AudioFilename { get; set; }
+    
+    public int PreviewTime { get; set; }
 }

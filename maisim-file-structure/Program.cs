@@ -9,7 +9,9 @@ using maisim_file_structure.Objects.Notes;
 BeatmapSet mockBeatmapSet = new BeatmapSet()
 {
     Creator = "Yeew",
-    BeatmapSetID = 1
+    BeatmapSetID = 1,
+    AudioFilename = "test.mp3",
+    PreviewTime = 555,
 };
 
 TrackMetadata trackMetadata = new TrackMetadata()
@@ -97,7 +99,7 @@ foreach (Beatmap beatmap in mockBeatmapSet.Beatmaps)
         foreach (PropertyInfo property in beatmap.GetType().GetProperties())
         {
             // Write every property except beatmapmetadata
-            if (property.Name != "TrackMetadata")
+            if (property.Name != "TrackMetadata" && property.Name != "BeatmapSet")
             {
                 file.WriteLine(property.Name + ": " + property.GetValue(beatmap));
             }
