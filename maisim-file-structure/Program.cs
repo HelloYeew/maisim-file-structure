@@ -75,11 +75,20 @@ List<Note> mockNoteList = new List<Note>()
 #endregion
 
 #region create beatmap file
+// create a folder for store the beatmapset
+// check if the folder exists
+if (!Directory.Exists($"{mockBeatmapSet.BeatmapSetID} {mockBeatmapSet.TrackMetadata.Artist} - {mockBeatmapSet.TrackMetadata.Title}"))
+{
+    // if not, create it
+    Directory.CreateDirectory($"{mockBeatmapSet.BeatmapSetID} {mockBeatmapSet.TrackMetadata.Artist} - {mockBeatmapSet.TrackMetadata.Title}");
+}
+
+
 // foreach in list of beatmaps in mockBeatmapSet
 foreach (Beatmap beatmap in mockBeatmapSet.Beatmaps)
 {
     // create a new StreamWriter using beatmap.BeatmapID as the filename
-    using (StreamWriter file = File.CreateText($"{beatmap.BeatmapID}.msbm"))
+    using (StreamWriter file = File.CreateText($"{mockBeatmapSet.BeatmapSetID} {mockBeatmapSet.TrackMetadata.Artist} - {mockBeatmapSet.TrackMetadata.Title}/{beatmap.BeatmapID}.msbm"))
     {
         // Write version number at the beginning of the file
         file.WriteLine("maisim beatmap file version 1");
