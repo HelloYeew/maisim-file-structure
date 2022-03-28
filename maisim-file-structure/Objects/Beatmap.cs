@@ -13,11 +13,7 @@ public class Beatmap
 
     public DifficultyLevel DifficultyLevel { get; set; }
 
-    public bool IsRemaster { get; set; }
-
     public TrackMetadata TrackMetadata { get; set; }
-
-    public float MaxSeasonalScore { get; set; }
 
     public string NoteDesigner { get; set; }
 }

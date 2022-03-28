@@ -1,7 +1,9 @@
-﻿using System.Reflection;
+﻿using System.Globalization;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using maisim_file_structure.Enum;
 using maisim_file_structure.Objects;
+using maisim_file_structure.Objects.Notes;
 
 namespace maisim_file_structure;
 
@@ -14,7 +16,9 @@ public class BeatmapDecoder
     public Beatmap beatmap;
     
     public TrackMetadata trackMetadata;
-    
+
+    public List<Note> Notes;
+
     public BeatmapDecoder(string filePath)
     {
         this.filePath = filePath;
@@ -75,6 +79,27 @@ public class BeatmapDecoder
                 PropertyInfo propertyInfo = trackMetadata.GetType().GetProperty(property);
                 propertyInfo.SetValue(trackMetadata, Convert.ChangeType(value, propertyInfo.PropertyType));
                 // remove the first element
+                lines = lines.Skip(1).ToArray();
+            }
+            
+            // skip the next line (empty)
+            lines = lines.Skip(1).ToArray();
+            Notes = new List<Note>();
+            // import notes from the lines to notes
+            while (lines[0] != "")
+            {
+                // each line has , to seperate the value
+                // first value is the note type
+                // split the entire line to a new array
+                string[] values = lines[0].Split(',');
+                if (values[0] == "1")
+                {
+                    Notes.Add(new TapNote
+                    {
+                        Lane = NoteLaneExtension.GetNoteLaneByNumber(Int32.Parse(values[1])),
+                        TargetTime = float.Parse(values[2])
+                    });
+                }
                 lines = lines.Skip(1).ToArray();
             }
         }
