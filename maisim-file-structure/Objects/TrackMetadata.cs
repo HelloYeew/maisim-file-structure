@@ -7,8 +7,14 @@
 public class TrackMetadata
 {
     public string Title { get; set; }
+    
+    public string TitleUnicode { get; set; }
 
     public string Artist { get; set; }
+    
+    public string ArtistUnicode { get; set; }
+    
+    public string Source { get; set; }
 
     public string CoverPath { get; set; }
 

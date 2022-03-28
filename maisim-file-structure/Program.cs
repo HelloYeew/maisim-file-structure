@@ -5,20 +5,48 @@ using maisim_file_structure.Objects;
 using maisim_file_structure.Objects.Notes;
 
 #region mock objects
+
+BeatmapSet mockBeatmapSet = new BeatmapSet()
+{
+    Creator = "Yeew",
+    BeatmapSetID = 1
+};
+
 TrackMetadata trackMetadata = new TrackMetadata()
 {
     Title = "Lemon",
+    TitleUnicode = "Lemon",
     Artist = "Kenshi Yonezu",
+    ArtistUnicode = "米津玄師",
+    Source = "",
     Bpm = 80,
-    CoverPath = "Test/lemon.jpg"
+    CoverPath = "lemon.jpg"
 };
 
-Beatmap mockBeatmap = new()
+mockBeatmapSet.TrackMetadata = trackMetadata;
+
+Beatmap mockBeatmapOne = new()
 {
     TrackMetadata = trackMetadata,
     DifficultyLevel = DifficultyLevel.Basic,
     DifficultyRating = 10,
-    NoteDesigner = "peeppy"
+    NoteDesigner = "Yeew",
+    BeatmapID = 1
+};
+
+Beatmap mockBeatmapTwo = new()
+{
+    TrackMetadata = trackMetadata,
+    DifficultyLevel = DifficultyLevel.Advanced,
+    DifficultyRating = 10,
+    NoteDesigner = "Yeew",
+    BeatmapID = 2
+};
+
+mockBeatmapSet.Beatmaps = new List<Beatmap>
+{
+    mockBeatmapOne,
+    mockBeatmapTwo
 };
 
 List<Note> mockNoteList = new List<Note>()
@@ -47,61 +75,74 @@ List<Note> mockNoteList = new List<Note>()
 #endregion
 
 #region create beatmap file
-// create a new StreamWriter
-using (StreamWriter file = File.CreateText(@"test.msbm"))
+// foreach in list of beatmaps in mockBeatmapSet
+foreach (Beatmap beatmap in mockBeatmapSet.Beatmaps)
 {
-    // Write version number at the beginning of the file
-    file.WriteLine("maisim beatmap file version 1");
-    file.WriteLine("");
-    // Then add every property in beatmap object to the file using property name : value
-    foreach (PropertyInfo property in mockBeatmap.GetType().GetProperties())
+    // create a new StreamWriter using beatmap.BeatmapID as the filename
+    using (StreamWriter file = File.CreateText($"{beatmap.BeatmapID}.msbm"))
     {
-        // Write every property except beatmapmetadata
-        if (property.Name != "TrackMetadata")
+        // Write version number at the beginning of the file
+        file.WriteLine("maisim beatmap file version 1");
+        file.WriteLine("");
+        // Then add every property in beatmap object to the file using property name : value
+        foreach (PropertyInfo property in beatmap.GetType().GetProperties())
         {
-            file.WriteLine(property.Name + ": " + property.GetValue(mockBeatmap));
+            // Write every property except beatmapmetadata
+            if (property.Name != "TrackMetadata")
+            {
+                file.WriteLine(property.Name + ": " + property.GetValue(beatmap));
+            }
         }
-    }
-    // Write all of the beatmap metadata in beatmap object
-    file.WriteLine("");
-    foreach (PropertyInfo property in mockBeatmap.TrackMetadata.GetType().GetProperties())
-    {
-        file.WriteLine(property.Name + ": " + property.GetValue(mockBeatmap.TrackMetadata));
-    }
-    file.WriteLine("");
-    // Write all of the notes in the note list
-    foreach (Note note in mockNoteList)
-    {
-        if (note is TapNote tapNote)
+        // Write all of the beatmap metadata in beatmap object
+        file.WriteLine("");
+        foreach (PropertyInfo property in beatmap.TrackMetadata.GetType().GetProperties())
         {
-            file.WriteLine("1," + NoteLaneExtension.GetNumberByNoteLane(tapNote.Lane) + "," + tapNote.TargetTime);
+            file.WriteLine(property.Name + ": " + property.GetValue(beatmap.TrackMetadata));
+        }
+        // Write all of the beatmap set metadata in beatmapsets object
+        file.WriteLine("");
+        foreach (PropertyInfo property in mockBeatmapSet.GetType().GetProperties())
+        {
+            if (property.Name != "Beatmaps" && property.Name != "TrackMetadata")
+            {
+                file.WriteLine(property.Name + ": " + property.GetValue(mockBeatmapSet));
+            }
+        }
+        // Write all of the notes in the note list
+        file.WriteLine("");
+        foreach (Note note in mockNoteList)
+        {
+            if (note is TapNote tapNote)
+            {
+                file.WriteLine("1," + NoteLaneExtension.GetNumberByNoteLane(tapNote.Lane) + "," + tapNote.TargetTime);
+            }
         }
     }
 }
 #endregion
 
-BeatmapDecoder decoder = new BeatmapDecoder(@"test.msbm");
-Console.WriteLine(decoder.version);
-// print all of the properties in decoded beatmap
-foreach (PropertyInfo property in decoder.beatmap.GetType().GetProperties())
-{
-    Console.WriteLine(property.Name + " : " + property.GetValue(decoder.beatmap));
-}
-Console.WriteLine("");
-// print all of the properties in decoded beatmap metadata
-foreach (PropertyInfo property in decoder.trackMetadata.GetType().GetProperties())
-{
-    Console.WriteLine(property.Name + " : " + property.GetValue(decoder.trackMetadata));
-}
-Console.WriteLine("");
-// print all of the notes in the note list
-foreach(Note note in decoder.Notes)
-{
-    if (note is TapNote tapNote)
-    {
-        Console.WriteLine(nameof(tapNote) + " " + NoteLaneExtension.GetNumberByNoteLane(tapNote.Lane) + "," + tapNote.TargetTime);
-    }
-}
+// BeatmapDecoder decoder = new BeatmapDecoder(@"test.msbm");
+// Console.WriteLine(decoder.version);
+// // print all of the properties in decoded beatmap
+// foreach (PropertyInfo property in decoder.beatmap.GetType().GetProperties())
+// {
+//     Console.WriteLine(property.Name + " : " + property.GetValue(decoder.beatmap));
+// }
+// Console.WriteLine("");
+// // print all of the properties in decoded beatmap metadata
+// foreach (PropertyInfo property in decoder.trackMetadata.GetType().GetProperties())
+// {
+//     Console.WriteLine(property.Name + " : " + property.GetValue(decoder.trackMetadata));
+// }
+// Console.WriteLine("");
+// // print all of the notes in the note list
+// foreach(Note note in decoder.Notes)
+// {
+//     if (note is TapNote tapNote)
+//     {
+//         Console.WriteLine(nameof(tapNote) + " " + NoteLaneExtension.GetNumberByNoteLane(tapNote.Lane) + "," + tapNote.TargetTime);
+//     }
+// }
 
 // TODO: Seperate some of the mess to a new class
 // TODO: Add a unit test for the decoder and encoder

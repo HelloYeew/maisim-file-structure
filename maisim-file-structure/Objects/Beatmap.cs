@@ -1,4 +1,5 @@
 ﻿using maisim_file_structure.Enum;
+using maisim_file_structure.Objects.Notes;
 
 namespace maisim_file_structure.Objects;
 
@@ -9,6 +10,8 @@ public class Beatmap
 {
     // TODO: Implement SongSet when it's available
 
+    public BeatmapSet BeatmapSet { get; set; }
+    
     public float DifficultyRating { get; set; }
 
     public DifficultyLevel DifficultyLevel { get; set; }
@@ -16,4 +19,6 @@ public class Beatmap
     public TrackMetadata TrackMetadata { get; set; }
 
     public string NoteDesigner { get; set; }
+
+    public int BeatmapID { get; set; }
 }
