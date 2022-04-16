@@ -1,4 +1,5 @@
-﻿using maisim_file_structure.Enum;
+﻿using System.ComponentModel.DataAnnotations;
+using maisim_file_structure.Enum;
 using maisim_file_structure.Objects.Notes;
 
 namespace maisim_file_structure.Objects;
@@ -19,6 +20,7 @@ public class Beatmap
     public TrackMetadata TrackMetadata { get; set; }
 
     public string NoteDesigner { get; set; }
-
+    
+    [Key]
     public int BeatmapID { get; set; }
 }

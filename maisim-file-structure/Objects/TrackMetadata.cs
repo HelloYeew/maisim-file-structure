@@ -1,9 +1,12 @@
-﻿namespace maisim_file_structure.Objects;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace maisim_file_structure.Objects;
 
 /// <summary>
 /// Class that provide the essential track metadata that's normally bind to the beatmap.
 /// </summary>
-/// <seealso cref="maisim.Game.Beatmaps.Beatmap"/>
+/// <seealso cref="Beatmap"/>
+[Keyless]
 public class TrackMetadata
 {
     public string Title { get; set; }

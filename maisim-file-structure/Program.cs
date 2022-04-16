@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using maisim_file_structure;
+using maisim_file_structure.Database;
 using maisim_file_structure.Enum;
 using maisim_file_structure.Objects;
 using maisim_file_structure.Objects.Notes;
@@ -132,28 +133,81 @@ foreach (Beatmap beatmap in mockBeatmapSet.Beatmaps)
 }
 #endregion
 
-// BeatmapDecoder decoder = new BeatmapDecoder(@"test.msbm");
-// Console.WriteLine(decoder.version);
-// // print all of the properties in decoded beatmap
-// foreach (PropertyInfo property in decoder.beatmap.GetType().GetProperties())
-// {
-//     Console.WriteLine(property.Name + " : " + property.GetValue(decoder.beatmap));
-// }
-// Console.WriteLine("");
-// // print all of the properties in decoded beatmap metadata
-// foreach (PropertyInfo property in decoder.trackMetadata.GetType().GetProperties())
-// {
-//     Console.WriteLine(property.Name + " : " + property.GetValue(decoder.trackMetadata));
-// }
-// Console.WriteLine("");
-// // print all of the notes in the note list
-// foreach(Note note in decoder.Notes)
-// {
-//     if (note is TapNote tapNote)
-//     {
-//         Console.WriteLine(nameof(tapNote) + " " + NoteLaneExtension.GetNumberByNoteLane(tapNote.Lane) + "," + tapNote.TargetTime);
-//     }
-// }
+BeatmapDecoder decoder = new BeatmapDecoder(@"1 Kenshi Yonezu - Lemon/1.msbm");
+Console.WriteLine(decoder.version);
+// print all of the properties in decoded beatmap
+foreach (PropertyInfo property in decoder.beatmap.GetType().GetProperties())
+{
+    Console.WriteLine(property.Name + " : " + property.GetValue(decoder.beatmap));
+}
+Console.WriteLine("");
+// print all of the properties in decoded beatmap metadata
+foreach (PropertyInfo property in decoder.trackMetadata.GetType().GetProperties())
+{
+    Console.WriteLine(property.Name + " : " + property.GetValue(decoder.trackMetadata));
+}
+Console.WriteLine("");
+// print all of the notes in the note list
+foreach(Note note in decoder.Notes)
+{
+    if (note is TapNote tapNote)
+    {
+        Console.WriteLine(nameof(tapNote) + " " + NoteLaneExtension.GetNumberByNoteLane(tapNote.Lane) + "," + tapNote.TargetTime);
+    }
+}
+
+#region EFCore test
+
+// Insert a new beatmap into the database
+var database = new MaisimDatabaseContext();
+
+// Create a new beatmap object and add it to the database
+database.Add(new Beatmap()
+{
+    TrackMetadata = null,
+    DifficultyLevel = DifficultyLevel.Basic,
+    DifficultyRating = 10,
+    NoteDesigner = "Yeew",
+    BeatmapID = 1
+});
+database.SaveChanges();
+
+// Read all of the beatmaps from the database
+var beatmaps = database.Beatmaps.ToList();
+foreach (Beatmap beatmap in beatmaps)
+{
+    Console.WriteLine(beatmap.BeatmapID + " " + beatmap.DifficultyLevel + " " + beatmap.DifficultyRating + " " + beatmap.NoteDesigner);
+}
+
+// Update the beatmap with the same beatmapID
+database.Beatmaps.Update(new Beatmap()
+{
+    TrackMetadata = trackMetadata,
+    DifficultyLevel = DifficultyLevel.Expert,
+    DifficultyRating = 20,
+    NoteDesigner = "Yeew",
+    BeatmapID = 1
+});
+database.SaveChanges();
+
+// Delete the beatmap with the same beatmapID
+database.Beatmaps.Remove(new Beatmap()
+{
+    BeatmapID = 1
+});
+database.SaveChanges();
+
+// Check if the beatmap is deleted
+beatmaps = database.Beatmaps.ToList();
+if (beatmaps.Count == 0)
+{
+    Console.WriteLine("Beatmap is deleted");
+}
+
+
+
+
+#endregion
 
 // TODO: Seperate some of the mess to a new class
 // TODO: Add a unit test for the decoder and encoder
