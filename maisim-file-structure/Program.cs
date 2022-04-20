@@ -130,6 +130,29 @@ foreach (Beatmap beatmap in mockBeatmapSet.Beatmaps)
             }
         }
     }
+    
+    // Then create a new file for store the beatmapset data
+    using (StreamWriter file = File.CreateText($"{mockBeatmapSet.BeatmapSetID} {mockBeatmapSet.TrackMetadata.Artist} - {mockBeatmapSet.TrackMetadata.Title}/{mockBeatmapSet.BeatmapSetID}.msbs"))
+    {
+        // Write version number at the beginning of the file
+        file.WriteLine("maisim beatmap set file version 1");
+        file.WriteLine("");
+        // Then add every property in beatmap object to the file using property name : value
+        foreach (PropertyInfo property in mockBeatmapSet.GetType().GetProperties())
+        {
+            // Write every property except beatmapmetadata
+            if (property.Name != "Beatmaps" && property.Name != "TrackMetadata")
+            {
+                file.WriteLine(property.Name + ": " + property.GetValue(mockBeatmapSet));
+            }
+        }
+        // Write all of the beatmap metadata in beatmap object
+        file.WriteLine("");
+        foreach (PropertyInfo property in mockBeatmapSet.TrackMetadata.GetType().GetProperties())
+        {
+            file.WriteLine(property.Name + ": " + property.GetValue(mockBeatmapSet.TrackMetadata));
+        }
+    }
 }
 #endregion
 
@@ -158,54 +181,51 @@ foreach(Note note in decoder.Notes)
 
 #region EFCore test
 
-// Insert a new beatmap into the database
-var database = new MaisimDatabaseContext();
-
-// Create a new beatmap object and add it to the database
-database.Add(new Beatmap()
-{
-    TrackMetadata = null,
-    DifficultyLevel = DifficultyLevel.Basic,
-    DifficultyRating = 10,
-    NoteDesigner = "Yeew",
-    BeatmapID = 1
-});
-database.SaveChanges();
-
-// Read all of the beatmaps from the database
-var beatmaps = database.Beatmaps.ToList();
-foreach (Beatmap beatmap in beatmaps)
-{
-    Console.WriteLine(beatmap.BeatmapID + " " + beatmap.DifficultyLevel + " " + beatmap.DifficultyRating + " " + beatmap.NoteDesigner);
-}
-
-// Update the beatmap with the same beatmapID
-database.Beatmaps.Update(new Beatmap()
-{
-    TrackMetadata = trackMetadata,
-    DifficultyLevel = DifficultyLevel.Expert,
-    DifficultyRating = 20,
-    NoteDesigner = "Yeew",
-    BeatmapID = 1
-});
-database.SaveChanges();
-
-// Delete the beatmap with the same beatmapID
-database.Beatmaps.Remove(new Beatmap()
-{
-    BeatmapID = 1
-});
-database.SaveChanges();
-
-// Check if the beatmap is deleted
-beatmaps = database.Beatmaps.ToList();
-if (beatmaps.Count == 0)
-{
-    Console.WriteLine("Beatmap is deleted");
-}
-
-
-
+// // Insert a new beatmap into the database
+// var database = new MaisimDatabaseContext();
+//
+// // Create a new beatmap object and add it to the database
+// database.Add(new Beatmap()
+// {
+//     TrackMetadata = null,
+//     DifficultyLevel = DifficultyLevel.Basic,
+//     DifficultyRating = 10,
+//     NoteDesigner = "Yeew",
+//     BeatmapID = 1
+// });
+// database.SaveChanges();
+//
+// // Read all of the beatmaps from the database
+// var beatmaps = database.Beatmaps.ToList();
+// foreach (Beatmap beatmap in beatmaps)
+// {
+//     Console.WriteLine(beatmap.BeatmapID + " " + beatmap.DifficultyLevel + " " + beatmap.DifficultyRating + " " + beatmap.NoteDesigner);
+// }
+//
+// // Update the beatmap with the same beatmapID
+// database.Beatmaps.Update(new Beatmap()
+// {
+//     TrackMetadata = trackMetadata,
+//     DifficultyLevel = DifficultyLevel.Expert,
+//     DifficultyRating = 20,
+//     NoteDesigner = "Yeew",
+//     BeatmapID = 1
+// });
+// database.SaveChanges();
+//
+// // Delete the beatmap with the same beatmapID
+// database.Beatmaps.Remove(new Beatmap()
+// {
+//     BeatmapID = 1
+// });
+// database.SaveChanges();
+//
+// // Check if the beatmap is deleted
+// beatmaps = database.Beatmaps.ToList();
+// if (beatmaps.Count == 0)
+// {
+//     Console.WriteLine("Beatmap is deleted");
+// }
 
 #endregion
 
