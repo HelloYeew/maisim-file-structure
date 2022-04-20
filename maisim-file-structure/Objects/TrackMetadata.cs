@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace maisim_file_structure.Objects;
 
@@ -6,9 +7,11 @@ namespace maisim_file_structure.Objects;
 /// Class that provide the essential track metadata that's normally bind to the beatmap.
 /// </summary>
 /// <seealso cref="Beatmap"/>
-[Keyless]
 public class TrackMetadata
 {
+    [Key]
+    public int ConnectBeatmapSetID { get; set; }
+    
     public string Title { get; set; }
     
     public string TitleUnicode { get; set; }

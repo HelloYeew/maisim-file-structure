@@ -23,7 +23,8 @@ TrackMetadata trackMetadata = new TrackMetadata()
     ArtistUnicode = "米津玄師",
     Source = "",
     Bpm = 80,
-    CoverPath = "lemon.jpg"
+    CoverPath = "lemon.jpg",
+    ConnectBeatmapSetID = 1
 };
 
 mockBeatmapSet.TrackMetadata = trackMetadata;
@@ -150,7 +151,10 @@ foreach (Beatmap beatmap in mockBeatmapSet.Beatmaps)
         file.WriteLine("");
         foreach (PropertyInfo property in mockBeatmapSet.TrackMetadata.GetType().GetProperties())
         {
-            file.WriteLine(property.Name + ": " + property.GetValue(mockBeatmapSet.TrackMetadata));
+            if (property.Name != "BeatmapSetID")
+            {
+                file.WriteLine(property.Name + ": " + property.GetValue(mockBeatmapSet.TrackMetadata));
+            }
         }
     }
 }
@@ -188,51 +192,75 @@ Console.WriteLine("");
 
 #region EFCore test
 
-// // Insert a new beatmap into the database
-// var database = new MaisimDatabaseContext();
-//
-// // Create a new beatmap object and add it to the database
-// database.Add(new Beatmap()
-// {
-//     TrackMetadata = null,
-//     DifficultyLevel = DifficultyLevel.Basic,
-//     DifficultyRating = 10,
-//     NoteDesigner = "Yeew",
-//     BeatmapID = 1
-// });
-// database.SaveChanges();
-//
-// // Read all of the beatmaps from the database
-// var beatmaps = database.Beatmaps.ToList();
-// foreach (Beatmap beatmap in beatmaps)
-// {
-//     Console.WriteLine(beatmap.BeatmapID + " " + beatmap.DifficultyLevel + " " + beatmap.DifficultyRating + " " + beatmap.NoteDesigner);
-// }
-//
-// // Update the beatmap with the same beatmapID
-// database.Beatmaps.Update(new Beatmap()
-// {
-//     TrackMetadata = trackMetadata,
-//     DifficultyLevel = DifficultyLevel.Expert,
-//     DifficultyRating = 20,
-//     NoteDesigner = "Yeew",
-//     BeatmapID = 1
-// });
-// database.SaveChanges();
-//
-// // Delete the beatmap with the same beatmapID
-// database.Beatmaps.Remove(new Beatmap()
-// {
-//     BeatmapID = 1
-// });
-// database.SaveChanges();
-//
-// // Check if the beatmap is deleted
-// beatmaps = database.Beatmaps.ToList();
-// if (beatmaps.Count == 0)
-// {
-//     Console.WriteLine("Beatmap is deleted");
-// }
+// Insert a new beatmap into the database
+var database = new MaisimDatabaseContext();
+
+// Create a new beatmap object and add it to the database
+database.Add(new TrackMetadata()
+{
+    Title = "Lemon",
+    TitleUnicode = "Lemon",
+    Artist = "Kenshi Yonezu",
+    ArtistUnicode = "米津玄師",
+    Source = "",
+    Bpm = 80,
+    CoverPath = "lemon.jpg"
+});
+database.SaveChanges();
+
+database.Add(new BeatmapSet()
+{
+    Creator = "Yeew",
+    AudioFilename = "test.mp3",
+    PreviewTime = 555,
+    TrackMetadata = database.TrackMetadata.FirstOrDefault(x => x.Title == "Lemon")
+});
+database.SaveChanges();
+
+database.Add(new Beatmap()
+{
+    DifficultyLevel = DifficultyLevel.Basic,
+    DifficultyRating = 10,
+    NoteDesigner = "Yeew",
+    BeatmapID = 1,
+    BeatmapSet = database.BeatmapSets.FirstOrDefault(x => x.Creator == "Yeew")
+});
+database.SaveChanges();
+
+// Read all of the beatmaps from the database
+var beatmaps = database.Beatmaps.ToList();
+foreach (Beatmap beatmap in beatmaps)
+{
+    Console.WriteLine(beatmap.BeatmapID + " " + beatmap.DifficultyLevel + " " + beatmap.DifficultyRating + " " + beatmap.NoteDesigner);
+}
+
+// Update the beatmap with the same beatmapID
+database.Beatmaps.Update(new Beatmap()
+{
+    TrackMetadata = trackMetadata,
+    DifficultyLevel = DifficultyLevel.Expert,
+    DifficultyRating = 20,
+    NoteDesigner = "Yeew",
+    BeatmapID = 1
+});
+database.SaveChanges();
+
+// Delete the beatmap with the same beatmapID
+database.Beatmaps.Remove(new Beatmap()
+{
+    BeatmapID = 1
+});
+database.SaveChanges();
+
+// Check if the beatmap is deleted
+beatmaps = database.Beatmaps.ToList();
+if (beatmaps.Count == 0)
+{
+    Console.WriteLine("Beatmap is deleted");
+}
+
+// TODO: From test we must seperat between main beatmap and beatmapset ID that use in web database and ID that use in EFCore.
+// TODO: Seperate this
 
 #endregion
 
