@@ -158,7 +158,15 @@ foreach (Beatmap beatmap in mockBeatmapSet.Beatmaps)
 
 BeatmapsetDecoder decoder = new BeatmapsetDecoder(@"1 Kenshi Yonezu - Lemon/");
 Console.WriteLine(decoder.version);
-
+// print all beatmapset properties except beatmap and trackmetadata
+foreach (PropertyInfo property in decoder.beatmapSet.GetType().GetProperties())
+{
+    if (property.Name != "Beatmaps" && property.Name != "TrackMetadata")
+    {
+        Console.WriteLine(property.Name + ": " + property.GetValue(decoder.beatmapSet));
+    }
+}
+Console.WriteLine("");
 // print all of the properties in decoded beatmap
 foreach (Beatmap beatmap in decoder.beatmapSet.Beatmaps)
 {
@@ -176,6 +184,7 @@ foreach (PropertyInfo property in decoder.trackMetadata.GetType().GetProperties(
 }
 Console.WriteLine("");
 
+// TODO: Make sure that it's work on EFCore
 
 #region EFCore test
 

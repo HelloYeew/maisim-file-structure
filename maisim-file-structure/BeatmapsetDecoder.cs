@@ -97,6 +97,8 @@ public class BeatmapsetDecoder
                 // trackMetadata.GetType().GetProperty(property).SetValue(trackMetadata, value);
                 lines = lines.Skip(1).ToArray();
             }
+            
+            beatmapSet.TrackMetadata = trackMetadata;
         }
         
         beatmapSet.Beatmaps = new List<Beatmap>();
