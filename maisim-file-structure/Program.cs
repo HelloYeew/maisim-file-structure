@@ -156,12 +156,17 @@ foreach (Beatmap beatmap in mockBeatmapSet.Beatmaps)
 }
 #endregion
 
-BeatmapDecoder decoder = new BeatmapDecoder(@"1 Kenshi Yonezu - Lemon/1.msbm");
+BeatmapsetDecoder decoder = new BeatmapsetDecoder(@"1 Kenshi Yonezu - Lemon/");
 Console.WriteLine(decoder.version);
+
 // print all of the properties in decoded beatmap
-foreach (PropertyInfo property in decoder.beatmap.GetType().GetProperties())
+foreach (Beatmap beatmap in decoder.beatmapSet.Beatmaps)
 {
-    Console.WriteLine(property.Name + " : " + property.GetValue(decoder.beatmap));
+    foreach (PropertyInfo property in beatmap.GetType().GetProperties())
+    {
+        Console.WriteLine(property.Name + " : " + property.GetValue(beatmap));
+    }
+    Console.WriteLine("");
 }
 Console.WriteLine("");
 // print all of the properties in decoded beatmap metadata
@@ -170,14 +175,7 @@ foreach (PropertyInfo property in decoder.trackMetadata.GetType().GetProperties(
     Console.WriteLine(property.Name + " : " + property.GetValue(decoder.trackMetadata));
 }
 Console.WriteLine("");
-// print all of the notes in the note list
-foreach(Note note in decoder.Notes)
-{
-    if (note is TapNote tapNote)
-    {
-        Console.WriteLine(nameof(tapNote) + " " + NoteLaneExtension.GetNumberByNoteLane(tapNote.Lane) + "," + tapNote.TargetTime);
-    }
-}
+
 
 #region EFCore test
 

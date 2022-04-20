@@ -102,6 +102,15 @@ public class BeatmapDecoder
                 }
                 lines = lines.Skip(1).ToArray();
             }
+            
+            // Temp : Print all notes
+            foreach (Note note in Notes)
+            {
+                if (note is TapNote tapNote)
+                {
+                    Console.WriteLine(nameof(tapNote) + " " + NoteLaneExtension.GetNumberByNoteLane(tapNote.Lane) + "," + tapNote.TargetTime);
+                }
+            }
         }
     }
 }
